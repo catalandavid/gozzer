@@ -36,7 +36,7 @@ func reqhandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := len(pathlastitem); i > 1; i-- {
 		word := []byte(pathlastitem[0 : i-1])
-		url := fmt.Sprintf("http://localhost:%s%s/%s", serverport, urlpath, word)
+		url := fmt.Sprintf("%s/%s", urlpath, word)
 		links = append(links, url)
 	}
 
