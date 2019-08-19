@@ -1,5 +1,7 @@
 package browser
 
+import "image"
+
 // Family ...
 type Family int
 
@@ -32,4 +34,14 @@ func indexOf(element string, data []string) int {
 		}
 	}
 	return -1 //not found.
+}
+
+// Browser ...
+type Browser struct {
+}
+
+// Interactions ...
+type Interactions interface {
+	New() *Browser
+	CapturePNGScreenshot() image.Image
 }
