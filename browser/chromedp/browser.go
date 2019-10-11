@@ -157,7 +157,7 @@ func (b *Browser) GetNodeForLocation(x int, y int) (cdp.BackendNodeID, cdp.NodeI
 	_ = chromedp.Run(b.Ctx, func(x int, y int) chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				backendNodeID, nodeID, err = dom.GetNodeForLocation(int64(x), int64(y)).Do(ctx)
+				backendNodeID, _, nodeID, err = dom.GetNodeForLocation(int64(x), int64(y)).Do(ctx)
 				if err != nil {
 					fmt.Println("GetNodeForLocation")
 					fmt.Println(err)
@@ -242,7 +242,7 @@ func (b *Browser) InjectJS(js string) {
 
 // MouseClickXY ...
 func (b *Browser) MouseClickXY(x, y int64) {
-	chromedp.Run(b.Ctx, chromedp.MouseClickXY(x, y))
+	chromedp.Run(b.Ctx, chromedp.MouseClickXY(float64(x), float64(y)))
 }
 
 // CapturePNGScreenshot ...
