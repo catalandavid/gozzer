@@ -225,15 +225,7 @@ func (b *Browser) InjectJS(js string) {
 	_ = chromedp.Run(b.Ctx, func(js string) chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				r1, r2, err := runtime.Evaluate(js).WithThrowOnSideEffect(false).WithSilent(true).WithIncludeCommandLineAPI(true).Do(ctx)
-
-				fmt.Println("===================")
-				fmt.Println(r1)
-				fmt.Println("===================")
-				fmt.Println(r2)
-				fmt.Println("===================")
-				fmt.Println(err)
-				fmt.Println("===================")
+				_, _, _ = runtime.Evaluate(js).WithThrowOnSideEffect(false).WithSilent(true).WithIncludeCommandLineAPI(true).Do(ctx)
 				return nil
 			}),
 		}
