@@ -2,6 +2,7 @@ package aem
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -21,8 +22,9 @@ func (b *AEMBrowser) Login(baseURL, username, password string) {
 		url.Values{"j_username": {username}, "j_password": {password}, "j_validate": {"true"}})
 
 	if err != nil {
-		fmt.Println(err)
-
+		log.Println("= AEM Login ERROR ==================================")
+		log.Println(err)
+		log.Println("====================================================")
 		return
 	}
 

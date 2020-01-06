@@ -25,7 +25,9 @@ func GetWebPageScreenshot(url string, width int, height int, loadWait time.Durat
 	var buf []byte
 	err := chromedp.Run(ctx, screenshot(url, width, height, loadWait, &buf))
 	if err != nil {
-		log.Fatal(err)
+		log.Println("= GetWebPageScreenshot ERROR =======================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
 
 	// // save the screenshot to disk
@@ -46,13 +48,18 @@ func GetWebPagePNGScreenshot(url string, width int, height int, loadWait time.Du
 	var buf []byte
 	err := chromedp.Run(ctx, screenshot(url, width, height, loadWait, &buf))
 	if err != nil {
-		log.Fatal(err)
+		log.Println("= GetWebPagePNGScreenshot ERROR ====================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
 
 	i, err := png.Decode(base64.NewDecoder(base64.StdEncoding, strings.NewReader(string(buf))))
 	if err != nil {
-		fmt.Println(err)
+		log.Println("= Decode PNG ERROR =================================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
+
 	// // save the screenshot to disk
 	// if err = ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
 	// 	log.Fatal(err)
@@ -75,7 +82,9 @@ func screenshot(url string, width int, height int, loadWait time.Duration, res *
 
 			ID, _, err := browser.GetWindowForTarget().Do(ctx)
 			if err != nil {
-				fmt.Println(err)
+				log.Println("= GetWindowForTarget ERROR =========================")
+				log.Println(err)
+				log.Println("====================================================")
 			}
 
 			bounds := browser.Bounds{
@@ -88,7 +97,9 @@ func screenshot(url string, width int, height int, loadWait time.Duration, res *
 
 			err = browser.SetWindowBounds(ID, &bounds).Do(ctx)
 			if err != nil {
-				fmt.Println(err)
+				log.Println("= SetWindowBounds ERROR ============================")
+				log.Println(err)
+				log.Println("====================================================")
 			}
 
 			// *res = *b

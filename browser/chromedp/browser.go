@@ -83,12 +83,15 @@ func (b *Browser) ListenTarget(fn func(interface{})) {
 
 // SetWindowSize ...
 func (b *Browser) SetWindowSize(width int, height int) {
+	// log.Println("= SetWindowSize Start ==============================")
 	err := chromedp.Run(b.Ctx, func(w int, h int) chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.ActionFunc(func(ctx context.Context) error {
 				ID, _, err := browser.GetWindowForTarget().Do(ctx)
 				if err != nil {
-					fmt.Println(err)
+					log.Println("= GetWindowForTarget ERROR =========================")
+					log.Println(err)
+					log.Println("====================================================")
 				}
 
 				bounds := browser.Bounds{
@@ -101,7 +104,9 @@ func (b *Browser) SetWindowSize(width int, height int) {
 
 				err = browser.SetWindowBounds(ID, &bounds).Do(ctx)
 				if err != nil {
-					fmt.Println(err)
+					log.Println("= SetWindowBounds ERROR ============================")
+					log.Println(err)
+					log.Println("====================================================")
 				}
 
 				return nil
@@ -110,26 +115,45 @@ func (b *Browser) SetWindowSize(width int, height int) {
 
 	}(width, height))
 	if err != nil {
-		log.Fatal(err)
+		log.Println("= SetWindowSize ERROR ==============================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 // Navigate ...
 func (b Browser) Navigate(url string) {
 	b.NavigationOccured = false
 
-	_ = chromedp.Run(b.Ctx, func(url string) chromedp.Tasks {
-		return chromedp.Tasks{
-			chromedp.Navigate(url),
-		}
-	}(url))
+	// err := chromedp.Run(b.Ctx, func(url string) chromedp.Tasks {
+	// 	return chromedp.Tasks{
+	// 		chromedp.Navigate(url),
+	// 	}
+	// }(url))
+	err := chromedp.Run(b.Ctx,
+		chromedp.Navigate(url),
+	)
 
-	misc.PollCheckUntil(func() bool { return b.NavigationOccured }, 3*time.Second)
+	if err != nil {
+		log.Println("= Navigate ERROR ===================================")
+		log.Println(err)
+		log.Println("====================================================")
+	}
+
+	err = misc.PollCheckUntil(func() bool { return b.NavigationOccured }, 3*time.Second)
+	// if err != nil {
+	// 	log.Println("= PollCheckUntil ERROR =============================")
+	// 	log.Println(err)
+	// 	log.Println("====================================================")
+	// }
 }
 
 // SetCookie ...
 func (b *Browser) SetCookie(name string, value string, url string) {
-	_ = chromedp.Run(b.Ctx, func(name string, value string, url string) chromedp.Tasks {
+	err := chromedp.Run(b.Ctx, func(name string, value string, url string) chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.ActionFunc(func(ctx context.Context) error {
 				success, err := network.SetCookie(name, value).WithURL(url).Do(ctx)
@@ -144,6 +168,11 @@ func (b *Browser) SetCookie(name string, value string, url string) {
 			}),
 		}
 	}(name, value, url))
+	if err != nil {
+		log.Println("= SetCookie ERROR ==================================")
+		log.Println(err)
+		log.Println("====================================================")
+	}
 }
 
 // GetNodeForLocation ...
@@ -205,7 +234,9 @@ func (b *Browser) ExecJS(js string) []byte {
 
 	err := chromedp.Run(b.Ctx, chromedp.EvaluateAsDevTools(js, &res))
 	if err != nil {
-		fmt.Println(err)
+		log.Println("= ExecJS ERROR =====================================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
 
 	// json.MarshalJSON()
@@ -222,19 +253,43 @@ func (b *Browser) ExecJS(js string) []byte {
 
 // InjectJS ...
 func (b *Browser) InjectJS(js string) {
-	_ = chromedp.Run(b.Ctx, func(js string) chromedp.Tasks {
+	err := chromedp.Run(b.Ctx, func(js string) chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.ActionFunc(func(ctx context.Context) error {
-				_, _, _ = runtime.Evaluate(js).WithThrowOnSideEffect(false).WithSilent(true).WithIncludeCommandLineAPI(true).Do(ctx)
+				_, _, err := runtime.Evaluate(js).WithThrowOnSideEffect(false).WithSilent(true).WithIncludeCommandLineAPI(true).Do(ctx)
+
+				if err != nil {
+					log.Println("= WithIncludeCommandLineAPI ERROR ==================")
+					log.Println(err)
+					log.Println("====================================================")
+				}
+
+				// fmt.Println("===================")
+				// fmt.Println(r1)
+				// fmt.Println("===================")
+				// fmt.Println(r2)
+				// fmt.Println("===================")
+				// fmt.Println(err)
+				// fmt.Println("===================")
 				return nil
 			}),
 		}
 	}(js))
+	if err != nil {
+		log.Println("= InjectJS ERROR ===================================")
+		log.Println(err)
+		log.Println("====================================================")
+	}
 }
 
 // MouseClickXY ...
 func (b *Browser) MouseClickXY(x, y int64) {
-	chromedp.Run(b.Ctx, chromedp.MouseClickXY(float64(x), float64(y)))
+	err := chromedp.Run(b.Ctx, chromedp.MouseClickXY(float64(x), float64(y)))
+	if err != nil {
+		log.Println("= MouseClickXY ERROR ===============================")
+		log.Println(err)
+		log.Println("====================================================")
+	}
 }
 
 // CapturePNGScreenshot ...
@@ -248,8 +303,13 @@ func (b *Browser) CapturePNGScreenshot() image.Image {
 	}(&buf))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("= CapturePNGScreenshot ERROR =======================")
+		log.Println(err)
+		log.Println("====================================================")
 	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	r := bytes.NewReader(buf)
 	png, err := png.Decode(r)
@@ -276,8 +336,14 @@ func (b *Browser) CapturePNGBytesBufferScreenshot() []byte {
 	}(&buf))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("= CapturePNGBytesBufferScreenshot ERROR ============")
+		log.Println(err)
+		log.Println("====================================================")
 	}
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	return buf
 }
